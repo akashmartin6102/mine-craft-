@@ -1,0 +1,2213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Block-Heart Boulevard 💕</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Press Start 2P', cursive;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            image-rendering: pixelated;
+            overflow-x: hidden;
+        }
+        
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            animation: twinkle 3s infinite;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .game-screen {
+            background: #2a2a2a;
+            border: 8px solid #1a1a1a;
+            border-radius: 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            overflow: hidden;
+        }
+        
+        .screen {
+            display: none;
+            padding: 30px;
+            min-height: 500px;
+            animation: fadeIn 0.5s;
+        }
+        
+        .screen.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .title {
+            font-size: 24px;
+            color: #FFD700;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 4px 4px #8B4513;
+            line-height: 1.5;
+        }
+        
+        .subtitle {
+            font-size: 12px;
+            color: #87CEEB;
+            text-align: center;
+            margin-bottom: 20px;
+            line-height: 1.8;
+        }
+        
+        .pixel-art {
+            width: 200px;
+            height: 200px;
+            margin: 20px auto;
+            background: #90EE90;
+            border: 4px solid #228B22;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+        }
+        
+        .btn {
+            background: #4CAF50;
+            color: white;
+            border: 4px solid #2E7D32;
+            padding: 15px 30px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 12px;
+            cursor: pointer;
+            display: block;
+            margin: 20px auto;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        
+        .btn:hover {
+            background: #66BB6A;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn-secondary {
+            background: #FF6B6B;
+            border-color: #C92A2A;
+        }
+        
+        .btn-secondary:hover {
+            background: #FF8787;
+        }
+        
+        .inventory {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            border: 4px solid #666;
+            padding: 10px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+        
+        .inventory-slot {
+            width: 50px;
+            height: 50px;
+            background: #333;
+            border: 2px solid #555;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            position: relative;
+        }
+        
+        .inventory-slot.new-item {
+            animation: itemGet 0.5s;
+        }
+        
+        @keyframes itemGet {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+        }
+        
+        .dialogue-box {
+            background: rgba(0,0,0,0.9);
+            border: 4px solid #FFD700;
+            padding: 20px;
+            margin: 20px 0;
+            color: white;
+            line-height: 1.8;
+            font-size: 10px;
+        }
+        
+        .choices {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .choice-btn {
+            flex: 1;
+            min-width: 200px;
+            padding: 15px;
+            background: #9C27B0;
+            border: 4px solid #7B1FA2;
+            color: white;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            line-height: 1.6;
+        }
+        
+        .choice-btn:hover {
+            background: #BA68C8;
+            transform: translateY(-2px);
+        }
+        
+        .day-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .day-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: 4px solid #4a5568;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            color: white;
+        }
+        
+        .day-card:hover:not(.locked) {
+            transform: translateY(-5px);
+            border-color: #FFD700;
+            box-shadow: 0 8px 16px rgba(255,215,0,0.3);
+        }
+        
+        .day-card.locked {
+            opacity: 0.4;
+            cursor: not-allowed;
+            background: #555;
+        }
+        
+        .day-card.completed {
+            border-color: #4CAF50;
+            background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+        }
+        
+        .day-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+        
+        .day-title {
+            font-size: 10px;
+            margin-bottom: 5px;
+            color: #FFD700;
+        }
+        
+        .day-subtitle {
+            font-size: 8px;
+            color: #E0E0E0;
+            line-height: 1.5;
+        }
+        
+        .activity-container {
+            background: rgba(255,255,255,0.1);
+            border: 4px solid #FFD700;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0;
+        }
+        
+        .bouquet-builder {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .flower-option {
+            background: #4CAF50;
+            border: 3px solid #2E7D32;
+            padding: 15px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 30px;
+            transition: all 0.2s;
+        }
+        
+        .flower-option:hover {
+            transform: scale(1.1);
+        }
+        
+        .flower-option.selected {
+            border-color: #FFD700;
+            box-shadow: 0 0 20px rgba(255,215,0,0.5);
+        }
+        
+        .your-bouquet {
+            background: rgba(0,0,0,0.8);
+            border: 4px solid #FFD700;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            font-size: 40px;
+        }
+        
+        .music-disc {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: #FF6B6B;
+            border: 4px solid #C92A2A;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+        
+        .music-disc:hover {
+            transform: rotate(180deg) scale(1.1);
+        }
+        
+        .music-disc.playing {
+            animation: spin 3s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .progress-bar {
+            background: #333;
+            border: 4px solid #666;
+            height: 30px;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, #4CAF50, #66BB6A);
+            height: 100%;
+            transition: width 0.5s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 10px;
+        }
+        
+        .heart-container {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 40px;
+            animation: heartbeat 1.5s infinite;
+        }
+        
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .final-scene {
+            background: linear-gradient(to bottom, #87CEEB 0%, #E0F6FF 50%, #90EE90 100%);
+            padding: 40px;
+            text-align: center;
+            border: 8px solid #8B4513;
+        }
+        
+        .signpost {
+            background: #8B4513;
+            border: 4px solid #654321;
+            padding: 30px;
+            margin: 20px auto;
+            max-width: 500px;
+            color: #FFD700;
+            font-size: 14px;
+            line-height: 2;
+            transform: perspective(500px) rotateY(-5deg);
+        }
+        
+        .avatar-duo {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 30px 0;
+        }
+        
+        .avatar {
+            width: 120px;
+            height: 120px;
+            background: #FFB6C1;
+            border: 4px solid #FF69B4;
+            position: relative;
+        }
+        
+        .avatar::before {
+            content: '👤';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 60px;
+        }
+        
+        .character-scene {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(to bottom, #87CEEB 0%, #90EE90 70%, #8B7355 100%);
+            border: 4px solid #654321;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        .character {
+            position: absolute;
+            width: 80px;
+            height: 120px;
+            transition: all 0.5s ease;
+            cursor: pointer;
+        }
+        
+        .character:hover {
+            transform: scale(1.1);
+        }
+        
+        .character-body {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            image-rendering: pixelated;
+        }
+        
+        /* Player 1 - Based on photos (Akash - darker skin, curly hair, NO glasses) */
+        .player1 .head {
+            width: 40px;
+            height: 40px;
+            background: #A0785A;
+            border: 3px solid #2a2a2a;
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .player1 .eyes {
+            position: absolute;
+            top: 18px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 8px;
+        }
+        
+        .player1 .eyes::before,
+        .player1 .eyes::after {
+            content: '';
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #2a2a2a;
+            border-radius: 50%;
+        }
+        
+        .player1 .eyes::before {
+            left: 0;
+        }
+        
+        .player1 .eyes::after {
+            right: 0;
+        }
+        
+        .player1 .mouth {
+            position: absolute;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 15px;
+            height: 5px;
+            border-bottom: 3px solid #2a2a2a;
+            border-radius: 0 0 10px 10px;
+        }
+        
+        .player1 .hair {
+            width: 50px;
+            height: 30px;
+            background: #1a1a1a;
+            border-radius: 50% 50% 0 0;
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 3px solid #000;
+        }
+        
+        .player1 .hair::before {
+            content: '';
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #2a2a2a;
+            border-radius: 50%;
+            top: 5px;
+            left: 5px;
+            box-shadow: 10px 0 #2a2a2a, 20px 0 #2a2a2a, 30px 0 #2a2a2a,
+                        5px 8px #2a2a2a, 15px 8px #2a2a2a, 25px 8px #2a2a2a;
+        }
+        
+        .player1 .body {
+            width: 50px;
+            height: 60px;
+            background: #87CEEB;
+            border: 3px solid #2a2a2a;
+            position: absolute;
+            top: 45px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .player1 .legs {
+            width: 50px;
+            height: 30px;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .player1 .leg {
+            width: 20px;
+            height: 30px;
+            background: #6B8E23;
+            border: 3px solid #2a2a2a;
+            position: absolute;
+            bottom: 0;
+        }
+        
+        .player1 .leg:first-child {
+            left: 5px;
+        }
+        
+        .player1 .leg:last-child {
+            right: 5px;
+        }
+        
+        /* Player 2 - Based on photos (glasses, lighter skin, wavy hair) */
+        .player2 .head {
+            width: 40px;
+            height: 40px;
+            background: #D4A574;
+            border: 3px solid #2a2a2a;
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .player2 .hair {
+            width: 50px;
+            height: 32px;
+            background: #2a2a2a;
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 3px solid #000;
+            border-radius: 40% 40% 20% 20%;
+        }
+        
+        .player2 .hair::before {
+            content: '';
+            position: absolute;
+            width: 45px;
+            height: 20px;
+            background: #1a1a1a;
+            top: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 50%;
+        }
+        
+        .player2 .glasses {
+            width: 35px;
+            height: 15px;
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 2px solid #555;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.4);
+        }
+        
+        .player2 .glasses::before {
+            content: '';
+            width: 15px;
+            height: 15px;
+            border: 2px solid #555;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.4);
+            position: absolute;
+            left: -2px;
+        }
+        
+        .player2 .glasses::after {
+            content: '';
+            width: 15px;
+            height: 15px;
+            border: 2px solid #555;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.4);
+            position: absolute;
+            right: -2px;
+        }
+        
+        .player2 .body {
+            width: 50px;
+            height: 60px;
+            background: #9370DB;
+            border: 3px solid #2a2a2a;
+            position: absolute;
+            top: 45px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .player2 .legs {
+            width: 50px;
+            height: 30px;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .player2 .leg {
+            width: 20px;
+            height: 30px;
+            background: #4B0082;
+            border: 3px solid #2a2a2a;
+            position: absolute;
+            bottom: 0;
+        }
+        
+        .player2 .leg:first-child {
+            left: 5px;
+        }
+        
+        .player2 .leg:last-child {
+            right: 5px;
+        }
+        
+        .character-name {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            color: #FFD700;
+            padding: 5px 10px;
+            border: 2px solid #FFD700;
+            font-size: 8px;
+            white-space: nowrap;
+        }
+        
+        .action-bubble {
+            position: absolute;
+            background: white;
+            border: 3px solid #2a2a2a;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 20px;
+            animation: float 2s ease-in-out;
+            pointer-events: none;
+        }
+        
+        @keyframes float {
+            0% { opacity: 0; transform: translateY(0); }
+            50% { opacity: 1; }
+            100% { opacity: 0; transform: translateY(-50px); }
+        }
+        
+        .walking .leg:first-child {
+            animation: walkLeft 0.5s infinite;
+        }
+        
+        .walking .leg:last-child {
+            animation: walkRight 0.5s infinite;
+        }
+        
+        @keyframes walkLeft {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(-20deg); }
+        }
+        
+        @keyframes walkRight {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(20deg); }
+        }
+        
+        .jumping {
+            animation: jump 0.5s ease;
+        }
+        
+        @keyframes jump {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-30px); }
+        }
+        
+        .waving .body {
+            animation: wave 0.5s ease;
+            transform-origin: bottom center;
+        }
+        
+        @keyframes wave {
+            0%, 100% { transform: translateX(-50%) rotate(0deg); }
+            25% { transform: translateX(-50%) rotate(-10deg); }
+            75% { transform: translateX(-50%) rotate(10deg); }
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .action-btn {
+            background: #FF6B6B;
+            border: 3px solid #C92A2A;
+            color: white;
+            padding: 10px 20px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 9px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .action-btn:hover {
+            background: #FF8787;
+            transform: translateY(-2px);
+        }
+        
+        @media (max-width: 768px) {
+            .title {
+                font-size: 16px;
+            }
+            
+            .subtitle {
+                font-size: 10px;
+            }
+            
+            .btn, .choice-btn {
+                font-size: 10px;
+                padding: 12px 20px;
+            }
+            
+            .day-selector {
+                grid-template-columns: 1fr;
+            }
+            
+            .inventory {
+                bottom: 10px;
+                padding: 5px;
+            }
+            
+            .inventory-slot {
+                width: 40px;
+                height: 40px;
+                font-size: 20px;
+            }
+        }
+        
+        .secret-message {
+            background: rgba(255,215,0,0.2);
+            border: 4px solid #FFD700;
+            padding: 20px;
+            margin: 20px 0;
+            color: white;
+            font-size: 10px;
+            line-height: 2;
+            text-align: center;
+        }
+        
+        .mini-game {
+            background: #1a1a1a;
+            border: 4px solid #FFD700;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .question-card {
+            background: rgba(255,255,255,0.1);
+            border: 3px solid #87CEEB;
+            padding: 15px;
+            margin: 10px 0;
+            color: white;
+            font-size: 10px;
+            line-height: 1.8;
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Music for Days 1-6 -->
+    <audio id="backgroundMusic" loop>
+        <source src="https://www.chosic.com/wp-content/uploads/2021/07/purrple-cat-equinox.mp3" type="audio/mpeg">
+    </audio>
+    
+    <!-- Final Day Music (uploaded song) -->
+    <audio id="finalDayMusic" loop></audio>
+    
+    <!-- Stars background -->
+    <div class="stars" id="stars"></div>
+    
+    <!-- Music disc -->
+    <div class="music-disc" id="musicDisc" title="Click for music">🎵</div>
+    
+    <!-- Inventory -->
+    <div class="inventory" id="inventory"></div>
+    
+    <div class="container">
+        <div class="game-screen">
+            <!-- Start Screen -->
+            <div class="screen active" id="startScreen">
+                <h1 class="title">BLOCK-HEART<br>BOULEVARD</h1>
+                <div class="subtitle">A Valentine's Week Adventure</div>
+                
+                <div class="pixel-art">
+                    💝
+                </div>
+                
+                <div class="dialogue-box">
+                    Welcome, Player 1! You've discovered a mysterious chest at spawn point. 
+                    Inside is a quest log with a very special question...
+                </div>
+                
+                <button class="btn" onclick="showNameEntry()">Open The Chest</button>
+            </div>
+            
+            <!-- Name Entry Screen -->
+            <div class="screen" id="nameEntryScreen">
+                <h2 class="title">PLAYER 2<br>IDENTIFICATION</h2>
+                <div class="subtitle">Enter your name to join the adventure</div>
+                
+                <div class="dialogue-box">
+                    Before we begin this journey, I need to know what to call you, Player 2...
+                </div>
+                
+                <div style="text-align: center; margin: 30px 0;">
+                    <input type="text" id="playerName" placeholder="Enter your name..." 
+                           style="font-family: 'Press Start 2P', cursive; font-size: 14px; padding: 15px; 
+                                  background: #333; color: #FFD700; border: 4px solid #666; 
+                                  text-align: center; width: 80%; max-width: 400px;">
+                </div>
+                
+                <div class="dialogue-box" style="background: rgba(255,215,0,0.1); border-color: #FFD700;">
+                    💡 This name will be used throughout our adventure together!
+                </div>
+                
+                <button class="btn" onclick="saveName()">Continue Adventure</button>
+            </div>
+            
+            <!-- Quest Screen -->
+            <div class="screen" id="questScreen">
+                <h2 class="title">QUEST LOG</h2>
+                
+                <div class="dialogue-box">
+                    📜 MAIN QUEST: "Will you be my Player 2?"
+                    <br><br>
+                    This Valentine's Week, embark on a journey through 7 enchanted days.
+                    Each day unlocks new adventures, memories, and special moments just for us.
+                </div>
+                
+                <div class="heart-container">💕</div>
+                
+                <div class="choices">
+                    <button class="choice-btn" onclick="acceptQuest()">
+                        ✅ YES!<br>Let's start this adventure!
+                    </button>
+                    <button class="choice-btn" onclick="acceptQuest()">
+                        💯 DEFINITELY YES!<br>I'm ready Player 1!
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Day Selection Screen -->
+            <div class="screen" id="daySelection">
+                <h2 class="title">VALENTINE'S WEEK</h2>
+                <div class="subtitle">Select a day to begin your adventure</div>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 0%">
+                        <span id="progressText">0/7 Days</span>
+                    </div>
+                </div>
+                
+                <div class="day-selector">
+                    <div class="day-card" onclick="startDay(1)" id="day1">
+                        <div class="day-icon">🌹</div>
+                        <div class="day-title">DAY 1</div>
+                        <div class="day-subtitle">Rose Day</div>
+                    </div>
+                    
+                    <div class="day-card locked" id="day2" onclick="startDay(2)">
+                        <div class="day-icon">💍</div>
+                        <div class="day-title">DAY 2</div>
+                        <div class="day-subtitle">Propose Day</div>
+                    </div>
+                    
+                    <div class="day-card locked" id="day3" onclick="startDay(3)">
+                        <div class="day-icon">🤗</div>
+                        <div class="day-title">DAY 3</div>
+                        <div class="day-subtitle">Hug Day</div>
+                    </div>
+                    
+                    <div class="day-card locked" id="day4" onclick="startDay(4)">
+                        <div class="day-icon">💋</div>
+                        <div class="day-title">DAY 4</div>
+                        <div class="day-subtitle">Kiss Day</div>
+                    </div>
+                    
+                    <div class="day-card locked" id="day5" onclick="startDay(5)">
+                        <div class="day-icon">🍫</div>
+                        <div class="day-title">DAY 5</div>
+                        <div class="day-subtitle">Chocolate Day</div>
+                    </div>
+                    
+                    <div class="day-card locked" id="day6" onclick="startDay(6)">
+                        <div class="day-icon">🤝</div>
+                        <div class="day-title">DAY 6</div>
+                        <div class="day-subtitle">Promise Day</div>
+                    </div>
+                    
+                    <div class="day-card locked" id="day7" onclick="startDay(7)">
+                        <div class="day-icon">❤️</div>
+                        <div class="day-title">DAY 7</div>
+                        <div class="day-subtitle">Valentine's Day</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Day 1: Rose Day -->
+            <div class="screen" id="day1Screen">
+                <h2 class="title">DAY 1: ROSE DAY 🌹</h2>
+                <div class="subtitle">The Flower Forest Biome</div>
+                
+                <div class="dialogue-box">
+                    You've entered a beautiful pixel forest filled with roses, peonies, and tulips.
+                    The air smells sweet and a gentle breeze rustles through the blocky trees.
+                </div>
+                
+                <div class="character-scene" style="background: linear-gradient(to bottom, #87CEEB 0%, #90EE90 50%, #228B22 100%);">
+                    <div class="character player1" id="day1Char1" style="left: 25%; bottom: 20px;">
+                        <div class="character-body">
+                            <div class="hair"></div>
+                            <div class="head">
+                                <div class="eyes"></div>
+                                <div class="mouth"></div>
+                            </div>
+                            <div class="body"></div>
+                            <div class="legs">
+                                <div class="leg"></div>
+                                <div class="leg"></div>
+                            </div>
+                        </div>
+                        <div class="character-name">Akash</div>
+                    </div>
+                    
+                    <div class="character player2" id="day1Char2" style="left: 65%; bottom: 20px;">
+                        <div class="character-body">
+                            <div class="hair"></div>
+                            <div class="head">
+                                <div class="glasses"></div>
+                            </div>
+                            <div class="body"></div>
+                            <div class="legs">
+                                <div class="leg"></div>
+                                <div class="leg"></div>
+                            </div>
+                        </div>
+                        <div class="character-name" id="day1Player2Name">Player 2</div>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="action-btn" onclick="day1Action('pick')">🌹 Pick Flowers</button>
+                    <button class="action-btn" onclick="day1Action('walk')">🚶 Walk Together</button>
+                    <button class="action-btn" onclick="day1Action('gift')">💐 Give Bouquet</button>
+                </div>
+                
+                <div class="activity-container">
+                    <div style="color: #FFD700; font-size: 12px; text-align: center; margin-bottom: 20px;">
+                        🌺 CRAFT YOUR BOUQUET 🌺
+                    </div>
+                    
+                    <div class="bouquet-builder">
+                        <div class="flower-option" onclick="addFlower('🌹')">🌹</div>
+                        <div class="flower-option" onclick="addFlower('🌺')">🌺</div>
+                        <div class="flower-option" onclick="addFlower('🌸')">🌸</div>
+                        <div class="flower-option" onclick="addFlower('🌼')">🌼</div>
+                        <div class="flower-option" onclick="addFlower('🌻')">🌻</div>
+                        <div class="flower-option" onclick="addFlower('🌷')">🌷</div>
+                    </div>
+                    
+                    <div style="color: white; font-size: 10px; text-align: center; margin: 10px 0;">
+                        Click flowers to add to your bouquet
+                    </div>
+                    
+                    <div class="your-bouquet" id="bouquet">
+                        <span style="font-size: 12px; color: #888;">Your bouquet will appear here...</span>
+                    </div>
+                    
+                    <button class="btn" onclick="clearBouquet()">Clear Bouquet</button>
+                </div>
+                
+                <div class="secret-message">
+                    💭 "Just like each flower is unique, every moment with you adds color to my life."
+                </div>
+                
+                <button class="btn" onclick="completeDay(1)">Give Bouquet & Continue</button>
+            </div>
+            
+            <!-- Day 2: Propose Day -->
+            <div class="screen" id="day2Screen">
+                <h2 class="title">DAY 2: PROPOSE DAY 💍</h2>
+                <div class="subtitle">Avatar Customization & Intentions</div>
+                
+                <div class="dialogue-box">
+                    Before we continue our adventure together, let's create your character
+                    and share what you're hoping for in this journey...
+                </div>
+                
+                <div class="character-scene" style="background: linear-gradient(to bottom, #FFB6C1 0%, #FFC0CB 100%);">
+                    <div class="character player1" id="day2Char1" style="left: 30%; bottom: 20px;">
+                        <div class="character-body">
+                            <div class="hair"></div>
+                            <div class="head">
+                                <div class="eyes"></div>
+                                <div class="mouth"></div>
+                            </div>
+                            <div class="body"></div>
+                            <div class="legs">
+                                <div class="leg"></div>
+                                <div class="leg"></div>
+                            </div>
+                        </div>
+                        <div class="character-name">Akash</div>
+                    </div>
+                    
+                    <div class="character player2" id="day2Char2" style="left: 60%; bottom: 20px;">
+                        <div class="character-body">
+                            <div class="hair"></div>
+                            <div class="head">
+                                <div class="glasses"></div>
+                            </div>
+                            <div class="body"></div>
+                            <div class="legs">
+                                <div class="leg"></div>
+                                <div class="leg"></div>
+                            </div>
+                        </div>
+                        <div class="character-name" id="day2Player2Name">Player 2</div>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="action-btn" onclick="day2Action('propose')">💍 Propose</button>
+                    <button class="action-btn" onclick="day2Action('dance')">💃 Dance</button>
+                    <button class="action-btn" onclick="day2Action('celebrate')">🎉 Celebrate</button>
+                </div>
+                
+                <div class="mini-game">
+                    <div style="color: #FFD700; font-size: 12px; text-align: center; margin-bottom: 20px;">
+                        ⚔️ CHOOSE YOUR ADVENTURE STYLE ⚔️
+                    </div>
+                    
+                    <div class="choices" style="flex-direction: column;">
+                        <button class="choice-btn" onclick="selectStyle('cozy')">
+                            🏡 COZY & RELAXED<br>
+                            <span style="font-size: 8px;">Take it slow, enjoy every moment together</span>
+                        </button>
+                        <button class="choice-btn" onclick="selectStyle('adventurous')">
+                            🗺️ ADVENTUROUS & FUN<br>
+                            <span style="font-size: 8px;">Exciting activities and new experiences</span>
+                        </button>
+                        <button class="choice-btn" onclick="selectStyle('romantic')">
+                            💕 ROMANTIC & SWEET<br>
+                            <span style="font-size: 8px;">Heartfelt moments and deep connection</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="secret-message" id="styleResponse" style="display: none; margin-top: 20px;">
+                    Perfect choice! Our adventure will be filled with moments that match your heart. ✨
+                </div>
+                
+                <button class="btn" id="day2Continue" style="display: none;" onclick="completeDay(2)">
+                    Continue to Hug Day
+                </button>
+            </div>
+            
+            <!-- Day 3: Hug Day -->
+            <div class="screen" id="day3Screen">
+                <h2 class="title">DAY 3: HUG DAY 🤗</h2>
+                <div class="subtitle">The Cozy Tavern</div>
+                
+                <div class="dialogue-box">
+                    You've entered a warm tavern with a crackling fireplace.
+                    Wooden beams cross the ceiling, and the air smells of hot cocoa and comfort.
+                </div>
+                
+                <div class="character-scene">
+                    <div class="character player1" id="char1" style="left: 20%; bottom: 20px;">
+                        <div class="character-body">
+                            <div class="hair"></div>
+                            <div class="head">
+                                <div class="eyes"></div>
+                                <div class="mouth"></div>
+                            </div>
+                            <div class="body"></div>
+                            <div class="legs">
+                                <div class="leg"></div>
+                                <div class="leg"></div>
+                            </div>
+                        </div>
+                        <div class="character-name">Akash</div>
+                    </div>
+                    
+                    <div class="character player2" id="char2" style="left: 70%; bottom: 20px;">
+                        <div class="character-body">
+                            <div class="hair"></div>
+                            <div class="head">
+                                <div class="glasses"></div>
+                            </div>
+                            <div class="body"></div>
+                            <div class="legs">
+                                <div class="leg"></div>
+                                <div class="leg"></div>
+                            </div>
+                        </div>
+                        <div class="character-name" id="player2Name">Player 2</div>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="action-btn" onclick="characterAction('walk')">🚶 Walk Together</button>
+                    <button class="action-btn" onclick="characterAction('jump')">⬆️ Jump</button>
+                    <button class="action-btn" onclick="characterAction('wave')">👋 Wave</button>
+                    <button class="action-btn" onclick="characterAction('hug')">🤗 Hug</button>
+                    <button class="action-btn" onclick="characterAction('heart')">❤️ Send Heart</button>
+                </div>
+                
+                <div class="activity-container">
+                    <div style="color: #FFD700; font-size: 12px; text-align: center; margin-bottom: 20px;">
+                        ☕ CHOOSE YOUR POTION ☕
+                    </div>
+                    
+                    <div class="choices">
+                        <button class="choice-btn" onclick="choosePotion('healing')">
+                            💚 POTION OF HEALING<br>
+                            <span style="font-size: 8px;">(Sweet Hot Chocolate)</span>
+                        </button>
+                        <button class="choice-btn" onclick="choosePotion('fire')">
+                            🔥 POTION OF FIRE RESISTANCE<br>
+                            <span style="font-size: 8px;">(Spicy Cinnamon Latte)</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="dialogue-box" id="potionResponse" style="display: none; margin-top: 20px;">
+                    <!-- Response will be filled by JavaScript -->
+                </div>
+                
+                <button class="btn" id="day3Continue" style="display: none;" onclick="completeDay(3)">
+                    Continue to Kiss Day
+                </button>
+            </div>
+            
+            <!-- Day 4: Kiss Day -->
+            <div class="screen" id="day4Screen">
+                <h2 class="title">DAY 4: KISS DAY 💋</h2>
+                <div class="subtitle">Rooftop Star-Gaze</div>
+                
+                <div class="dialogue-box">
+                    You climb to a rooftop under a pixelated sky.
+                    Square stars twinkle above, and a blocky moon casts soft light across the scene.
+                </div>
+                
+                <div class="character-scene" style="background: linear-gradient(to bottom, #191970 0%, #4B0082 50%, #2F4F4F 100%);">
+                    <div style="position: absolute; top: 20px; left: 20%; font-size: 20px; animation: twinkle 2s infinite;">⭐</div>
+                    <div style="position: absolute; top: 40px; right: 25%; font-size: 15px; animation: twinkle 3s infinite;">✨</div>
+                    <div style="position: absolute; top: 60px; left: 60%; font-size: 18px; animation: twinkle 2.5s infinite;">⭐</div>
+                    <div style="position: absolute; top: 30px; right: 10%; font-size: 30px; color: #FFE4B5;">🌙</div>
+                    
+                    <div class="character player1" id="day4Char1" style="left: 28%; bottom: 20px;">
+                        <div class="character-body">
+                            <div class="hair"></div>
+                            <div class="head">
+                                <div class="eyes"></div>
+                                <div class="mouth"></div>
+                            </div>
+                            <div class="body"></div>
+                            <div class="legs">
+                                <div class="leg"></div>
+                                <div class="leg"></div>
+                            </div>
+                        </div>
+                        <div class="character-name">Akash</div>
+                    </div>
+                    
+                    <div class="character player2" id="day4Char2" style="left: 62%; bottom: 20px;">
+                        <div class="character-body">
+                            <div class="hair"></div>
+                            <div class="head">
+                                <div class="glasses"></div>
+                            </div>
+                            <div class="body"></div>
+                            <div class="legs">
+                                <div class="leg"></div>
+                                <div class="leg"></div>
+                            </div>
+                        </div>
+                        <div class="character-name" id="day4Player2Name">Player 2</div>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="action-btn" onclick="day4Action('stargaze')">⭐ Stargaze</button>
+                    <button class="action-btn" onclick="day4Action('closer')">💕 Move Closer</button>
+                    <button class="action-btn" onclick="day4Action('kiss')">💋 Kiss</button>
+                </div>
+                
+                <div class="mini-game">
+                    <div style="color: #FFD700; font-size: 12px; text-align: center; margin-bottom: 20px;">
+                        ⭐ MEMORY GAME: OUR MOMENTS ⭐
+                    </div>
+                    
+                    <div class="question-card">
+                        <strong style="color: #FFD700;">Question 1:</strong><br>
+                        What's your favorite memory of us together so far?
+                    </div>
+                    
+                    <div class="choices">
+                        <button class="choice-btn" onclick="selectMemory(1)">
+                            🌳 Our outdoor adventures
+                        </button>
+                        <button class="choice-btn" onclick="selectMemory(2)">
+                            🍕 Our food dates
+                        </button>
+                        <button class="choice-btn" onclick="selectMemory(3)">
+                            💭 Our deep conversations
+                        </button>
+                        <button class="choice-btn" onclick="selectMemory(4)">
+                            😄 Our silly moments
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="secret-message" id="memoryResponse" style="display: none;">
+                    Every memory with you is precious. I can't wait to create a million more. 💫
+                </div>
+                
+                <button class="btn" id="day4Continue" style="display: none;" onclick="completeDay(4)">
+                    Continue to Chocolate Day
+                </button>
+            </div>
+            
+            <!-- Day 5: Chocolate Day -->
+            <div class="screen" id="day5Screen">
+                <h2 class="title">DAY 5: CHOCOLATE DAY 🍫</h2>
+                <div class="subtitle">The Crafting Table</div>
+                
+                <div class="dialogue-box">
+                    Welcome to the kitchen! Today we're crafting chocolates together.
+                    Mix ingredients, make choices, and see what sweet creation we can make!
+                </div>
+                
+                <div class="character-scene" style="background: linear-gradient(to bottom, #8B4513 0%, #D2691E 50%, #CD853F 100%);">
+                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 80px; opacity: 0.3;">🍫</div>
+                    
+                    <div class="character player1" id="day5Char1" style="left: 30%; bottom: 20px;">
+                        <div class="character-body">
+                            <div class="hair"></div>
+                            <div class="head">
+                                <div class="eyes"></div>
+                                <div class="mouth"></div>
+                            </div>
+                            <div class="body"></div>
+                            <div class="legs">
+                                <div class="leg"></div>
+                                <div class="leg"></div>
+                            </div>
+                        </div>
+                        <div class="character-name">Akash</div>
+                    </div>
+                    
+                    <div class="character player2" id="day5Char2" style="left: 60%; bottom: 20px;">
+                        <div class="character-body">
+                            <div class="hair"></div>
+                            <div class="head">
+                                <div class="glasses"></div>
+                            </div>
+                            <div class="body"></div>
+                            <div class="legs">
+                                <div class="leg"></div>
+                                <div class="leg"></div>
+                            </div>
+                        </div>
+                        <div class="character-name" id="day5Player2Name">Player 2</div>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="action-btn" onclick="day5Action('cook')">👨‍🍳 Cook Together</button>
+                    <button class="action-btn" onclick="day5Action('taste')">😋 Taste Test</button>
+                    <button class="action-btn" onclick="day5Action('share')">🍫 Share Chocolate</button>
+                </div>
+                
+                <div class="activity-container">
+                    <div style="color: #FFD700; font-size: 12px; text-align: center; margin-bottom: 20px;">
+                        🍫 CHOCOLATE CRAFTING RECIPE 🍫
+                    </div>
+                    
+                    <div class="choices">
+                        <button class="choice-btn" onclick="addIngredient('dark')">
+                            🟫 Add Dark Chocolate<br>
+                            <span style="font-size: 8px;">(Rich & Bold)</span>
+                        </button>
+                        <button class="choice-btn" onclick="addIngredient('milk')">
+                            🤎 Add Milk Chocolate<br>
+                            <span style="font-size: 8px;">(Sweet & Creamy)</span>
+                        </button>
+                        <button class="choice-btn" onclick="addIngredient('nuts')">
+                            🥜 Add Nuts<br>
+                            <span style="font-size: 8px;">(Crunchy Texture)</span>
+                        </button>
+                        <button class="choice-btn" onclick="addIngredient('caramel')">
+                            🍮 Add Caramel<br>
+                            <span style="font-size: 8px;">(Gooey Sweetness)</span>
+                        </button>
+                    </div>
+                    
+                    <div class="your-bouquet" id="chocolateRecipe" style="font-size: 12px; color: white; line-height: 2;">
+                        Your chocolate recipe:<br>
+                        <span id="recipeList">Select ingredients above...</span>
+                    </div>
+                </div>
+                
+                <div class="secret-message">
+                    🍫 "Like chocolate, life with you is sweet, rich, and full of delightful surprises!"
+                </div>
+                
+                <button class="btn" onclick="completeDay(5)">Craft Chocolate & Continue</button>
+            </div>
+            
+            <!-- Day 6: Promise Day -->
+            <div class="screen" id="day6Screen">
+                <h2 class="title">DAY 6: PROMISE DAY 🤝</h2>
+                <div class="subtitle">The Fireside Reflection</div>
+                
+                <div class="dialogue-box">
+                    By the warm glow of the fireplace, let's make promises for our future together.
+                    These are the commitments we make as Akash and <span class="player2-inline">Player 2</span> in this game called life.
+                </div>
+                
+                <div class="character-scene" style="background: linear-gradient(to bottom, #8B4513 0%, #A0522D 100%);">
+                    <div style="position: absolute; top: 20%; left: 50%; transform: translateX(-50%); font-size: 100px; opacity: 0.4;">🔥</div>
+                    
+                    <div class="character player1" id="day6Char1" style="left: 32%; bottom: 20px;">
+                        <div class="character-body">
+                            <div class="hair"></div>
+                            <div class="head">
+                                <div class="eyes"></div>
+                                <div class="mouth"></div>
+                            </div>
+                            <div class="body"></div>
+                            <div class="legs">
+                                <div class="leg"></div>
+                                <div class="leg"></div>
+                            </div>
+                        </div>
+                        <div class="character-name">Akash</div>
+                    </div>
+                    
+                    <div class="character player2" id="day6Char2" style="left: 58%; bottom: 20px;">
+                        <div class="character-body">
+                            <div class="hair"></div>
+                            <div class="head">
+                                <div class="glasses"></div>
+                            </div>
+                            <div class="body"></div>
+                            <div class="legs">
+                                <div class="leg"></div>
+                                <div class="leg"></div>
+                            </div>
+                        </div>
+                        <div class="character-name" id="day6Player2Name">Player 2</div>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="action-btn" onclick="day6Action('hold')">🤝 Hold Hands</button>
+                    <button class="action-btn" onclick="day6Action('closer')">💑 Sit Closer</button>
+                    <button class="action-btn" onclick="day6Action('promise')">💍 Promise Ring</button>
+                </div>
+                
+                <div class="mini-game">
+                    <div style="color: #FFD700; font-size: 12px; text-align: center; margin-bottom: 20px;">
+                        📜 OUR PROMISES 📜
+                    </div>
+                    
+                    <div class="question-card">
+                        <strong style="color: #FFD700;">Promise 1:</strong><br>
+                        I promise to always be your safe space, where you can be completely yourself.
+                    </div>
+                    
+                    <div class="question-card">
+                        <strong style="color: #FFD700;">Promise 2:</strong><br>
+                        I promise to celebrate your wins and support you through challenges.
+                    </div>
+                    
+                    <div class="question-card">
+                        <strong style="color: #FFD700;">Promise 3:</strong><br>
+                        I promise to keep choosing you, every single day, in all the ways that matter.
+                    </div>
+                    
+                    <div class="question-card">
+                        <strong style="color: #FFD700;">Your Turn:</strong><br>
+                        What promise do you want to make?
+                    </div>
+                    
+                    <div class="choices">
+                        <button class="choice-btn" onclick="makePromise(1)">
+                            💪 I promise to always have your back
+                        </button>
+                        <button class="choice-btn" onclick="makePromise(2)">
+                            😊 I promise to make you smile every day
+                        </button>
+                        <button class="choice-btn" onclick="makePromise(3)">
+                            🌟 I promise to grow together with you
+                        </button>
+                        <button class="choice-btn" onclick="makePromise(4)">
+                            💝 I promise all of the above and more
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="secret-message" id="promiseResponse" style="display: none;">
+                    These promises are the building blocks of our forever. 💍✨
+                </div>
+                
+                <button class="btn" id="day6Continue" style="display: none;" onclick="completeDay(6)">
+                    Continue to Valentine's Day
+                </button>
+            </div>
+            
+            <!-- Day 7: Valentine's Day - Final Scene -->
+            <div class="screen" id="day7Screen">
+                <div class="final-scene">
+                    <h2 class="title" style="color: #FF1493; font-size: 28px;">
+                        DAY 7: VALENTINE'S DAY ❤️
+                    </h2>
+                    
+                    <div class="dialogue-box" style="border-color: #FF69B4; margin: 30px auto; max-width: 600px;">
+                        We've reached the final destination of our week-long journey...
+                        A special build site that represents something beautiful.
+                    </div>
+                    
+                    <div class="signpost">
+                        🏗️<br><br>
+                        "RESERVED FOR<br>
+                        OUR FUTURE"<br><br>
+                        <span style="font-size: 10px; color: #FFE4B5;">
+                            - Akash & <span id="finalPlayer2Name">Player 2</span> -
+                        </span>
+                    </div>
+                    
+                    <div class="character-scene" style="height: 300px; background: linear-gradient(to bottom, #FFB6C1 0%, #FFC0CB 50%, #FFE4E1 100%);">
+                        <div class="character player1" id="finalChar1" style="left: 35%; bottom: 20px;">
+                            <div class="character-body">
+                                <div class="hair"></div>
+                                <div class="head">
+                                    <div class="eyes"></div>
+                                    <div class="mouth"></div>
+                                </div>
+                                <div class="body"></div>
+                                <div class="legs">
+                                    <div class="leg"></div>
+                                    <div class="leg"></div>
+                                </div>
+                            </div>
+                            <div class="character-name">Akash</div>
+                        </div>
+                        
+                        <div style="position: absolute; left: 50%; bottom: 80px; transform: translateX(-50%); font-size: 60px; animation: heartbeat 1.5s infinite;">
+                            💕
+                        </div>
+                        
+                        <div class="character player2" id="finalChar2" style="left: 55%; bottom: 20px;">
+                            <div class="character-body">
+                                <div class="hair"></div>
+                                <div class="head">
+                                    <div class="glasses"></div>
+                                </div>
+                                <div class="body"></div>
+                                <div class="legs">
+                                    <div class="leg"></div>
+                                    <div class="leg"></div>
+                                </div>
+                            </div>
+                            <div class="character-name" id="finalPlayer2Name2">Player 2</div>
+                        </div>
+                    </div>
+                    
+                    <div class="action-buttons" style="margin: 20px 0;">
+                        <button class="action-btn" onclick="finalAction('dance')">💃 Dance Together</button>
+                        <button class="action-btn" onclick="finalAction('celebrate')">🎉 Celebrate</button>
+                        <button class="action-btn" onclick="finalAction('kiss')">💋 Kiss</button>
+                    </div>
+                    
+                    <div class="dialogue-box" style="border-color: #FFD700; background: rgba(255,215,0,0.2); max-width: 700px; margin: 30px auto;">
+                        <div style="font-size: 12px; line-height: 2.5; color: #2a2a2a; text-align: center;">
+                            <strong style="color: #FF1493;">My Dearest <span id="finalLetter">Player 2</span>,</strong><br><br>
+                            
+                            This week has been just the beginning. Every rose, every promise, every shared moment
+                            is a block we're placing together, building something extraordinary.<br><br>
+                            
+                            This plot of land marked "Reserved for Our Future" isn't empty—
+                            it's full of possibility, dreams, and all the adventures we haven't lived yet.<br><br>
+                            
+                            Thank you for being my Player 2, my co-builder in this beautiful game of life.
+                            Here's to constructing our future, one block at a time. 🏗️💕<br><br>
+                            
+                            <strong style="color: #FF1493;">Happy Valentine's Day!</strong><br>
+                            With all my love,<br>
+                            Akash ❤️
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 40px; text-align: center;">
+                        <div style="font-size: 60px; margin: 20px 0;">
+                            💝 🎮 ⛏️ 💕 🌹 ✨ 💍
+                        </div>
+                    </div>
+                    
+                    <button class="btn" onclick="restartAdventure()" style="margin-top: 30px; background: #FF1493; border-color: #C71585;">
+                        Save Our Adventure & Start Over
+                    </button>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    <script>
+        // Game State
+        let gameState = {
+            currentDay: 0,
+            completedDays: [],
+            inventory: [],
+            bouquet: [],
+            chocolateIngredients: [],
+            musicPlaying: false,
+            playerName: 'Player 2'
+        };
+        
+        // Initialize stars
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+        
+        createStars();
+        
+        // Music disc functionality
+        document.getElementById('musicDisc').addEventListener('click', function() {
+            const bgMusic = document.getElementById('backgroundMusic');
+            const finalMusic = document.getElementById('finalDayMusic');
+            
+            if (gameState.musicPlaying) {
+                // Turn music OFF
+                bgMusic.pause();
+                finalMusic.pause();
+                this.classList.remove('playing');
+                gameState.musicPlaying = false;
+            } else {
+                // Turn music ON
+                const currentScreen = document.querySelector('.screen.active').id;
+                if (currentScreen === 'day7Screen') {
+                    finalMusic.play().catch(e => console.log('Audio play failed:', e));
+                } else {
+                    bgMusic.play().catch(e => console.log('Audio play failed:', e));
+                }
+                this.classList.add('playing');
+                gameState.musicPlaying = true;
+            }
+        });
+        
+        // Screen navigation
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+            
+            // Switch music when entering/leaving day 7
+            if (gameState.musicPlaying) {
+                const bgMusic = document.getElementById('backgroundMusic');
+                const finalMusic = document.getElementById('finalDayMusic');
+                
+                if (screenId === 'day7Screen') {
+                    // Switch to final day music
+                    bgMusic.pause();
+                    finalMusic.currentTime = 0;
+                    finalMusic.play().catch(e => console.log('Audio play failed:', e));
+                } else {
+                    // Switch back to background music
+                    finalMusic.pause();
+                    bgMusic.play().catch(e => console.log('Audio play failed:', e));
+                }
+            }
+        }
+        
+        // Add item to inventory
+        function addToInventory(emoji) {
+            gameState.inventory.push(emoji);
+            updateInventory();
+        }
+        
+        function updateInventory() {
+            const inventory = document.getElementById('inventory');
+            inventory.innerHTML = '';
+            gameState.inventory.forEach(item => {
+                const slot = document.createElement('div');
+                slot.className = 'inventory-slot new-item';
+                slot.textContent = item;
+                inventory.appendChild(slot);
+                setTimeout(() => slot.classList.remove('new-item'), 500);
+            });
+        }
+        
+        // Start game flow
+        function showNameEntry() {
+            showScreen('nameEntryScreen');
+        }
+        
+        function saveName() {
+            const nameInput = document.getElementById('playerName');
+            const name = nameInput.value.trim();
+            
+            if (name === '') {
+                alert('Please enter your name to continue! 🎮');
+                return;
+            }
+            
+            gameState.playerName = name;
+            
+            // Update all player 2 name references
+            const player2Names = document.querySelectorAll('#player2Name, #finalPlayer2Name, #finalPlayer2Name2, #finalLetter, #day1Player2Name, #day2Player2Name, #day4Player2Name, #day5Player2Name, #day6Player2Name, .player2-inline');
+            player2Names.forEach(elem => {
+                elem.textContent = name;
+            });
+            
+            openChest();
+        }
+        
+        function openChest() {
+            showScreen('questScreen');
+        }
+        
+        // Character Actions
+        function characterAction(action) {
+            const char1 = document.getElementById('char1');
+            const char2 = document.getElementById('char2');
+            
+            // Remove previous animations
+            char1.classList.remove('walking', 'jumping', 'waving');
+            char2.classList.remove('walking', 'jumping', 'waving');
+            
+            switch(action) {
+                case 'walk':
+                    char1.classList.add('walking');
+                    char2.classList.add('walking');
+                    
+                    // Move characters closer
+                    setTimeout(() => {
+                        char1.style.left = '40%';
+                        char2.style.left = '55%';
+                    }, 100);
+                    
+                    setTimeout(() => {
+                        char1.classList.remove('walking');
+                        char2.classList.remove('walking');
+                    }, 2000);
+                    break;
+                    
+                case 'jump':
+                    char1.classList.add('jumping');
+                    char2.classList.add('jumping');
+                    
+                    setTimeout(() => {
+                        char1.classList.remove('jumping');
+                        char2.classList.remove('jumping');
+                    }, 500);
+                    break;
+                    
+                case 'wave':
+                    char1.classList.add('waving');
+                    setTimeout(() => {
+                        char2.classList.add('waving');
+                    }, 300);
+                    
+                    setTimeout(() => {
+                        char1.classList.remove('waving');
+                        char2.classList.remove('waving');
+                    }, 1000);
+                    break;
+                    
+                case 'hug':
+                    char1.classList.add('walking');
+                    char2.classList.add('walking');
+                    
+                    char1.style.left = '45%';
+                    char2.style.left = '48%';
+                    
+                    setTimeout(() => {
+                        char1.classList.remove('walking');
+                        char2.classList.remove('walking');
+                        showActionBubble('🤗', '47%');
+                    }, 1000);
+                    break;
+                    
+                case 'heart':
+                    showActionBubble('❤️', char1.style.left);
+                    setTimeout(() => {
+                        showActionBubble('💕', char2.style.left);
+                    }, 500);
+                    break;
+            }
+        }
+        
+        function showActionBubble(emoji, leftPosition) {
+            const scene = document.querySelector('#day3Screen .character-scene');
+            const bubble = document.createElement('div');
+            bubble.className = 'action-bubble';
+            bubble.textContent = emoji;
+            bubble.style.left = leftPosition;
+            bubble.style.bottom = '150px';
+            scene.appendChild(bubble);
+            
+            setTimeout(() => {
+                bubble.remove();
+            }, 2000);
+        }
+        
+        // Final scene actions
+        function finalAction(action) {
+            const char1 = document.getElementById('finalChar1');
+            const char2 = document.getElementById('finalChar2');
+            const scene = document.querySelector('#day7Screen .character-scene');
+            
+            switch(action) {
+                case 'dance':
+                    // Make characters move side to side
+                    let danceCount = 0;
+                    const danceInterval = setInterval(() => {
+                        if (danceCount % 2 === 0) {
+                            char1.style.left = '33%';
+                            char2.style.left = '57%';
+                        } else {
+                            char1.style.left = '37%';
+                            char2.style.left = '53%';
+                        }
+                        danceCount++;
+                        
+                        if (danceCount >= 8) {
+                            clearInterval(danceInterval);
+                            char1.style.left = '35%';
+                            char2.style.left = '55%';
+                        }
+                    }, 300);
+                    break;
+                    
+                case 'celebrate':
+                    // Show celebration emojis
+                    const emojis = ['🎉', '✨', '🎊', '💫', '⭐'];
+                    for (let i = 0; i < 5; i++) {
+                        setTimeout(() => {
+                            const bubble = document.createElement('div');
+                            bubble.className = 'action-bubble';
+                            bubble.textContent = emojis[i];
+                            bubble.style.left = (30 + Math.random() * 40) + '%';
+                            bubble.style.bottom = '100px';
+                            scene.appendChild(bubble);
+                            
+                            setTimeout(() => bubble.remove(), 2000);
+                        }, i * 200);
+                    }
+                    break;
+                    
+                case 'kiss':
+                    // Move characters together
+                    char1.style.left = '45%';
+                    char2.style.left = '48%';
+                    
+                    setTimeout(() => {
+                        const bubble = document.createElement('div');
+                        bubble.className = 'action-bubble';
+                        bubble.textContent = '💋';
+                        bubble.style.left = '47%';
+                        bubble.style.bottom = '150px';
+                        bubble.style.fontSize = '40px';
+                        scene.appendChild(bubble);
+                        
+                        setTimeout(() => {
+                            bubble.remove();
+                            char1.style.left = '35%';
+                            char2.style.left = '55%';
+                        }, 2000);
+                    }, 1000);
+                    break;
+            }
+        }
+        
+        // Day 1 Actions
+        function day1Action(action) {
+            const char1 = document.getElementById('day1Char1');
+            const char2 = document.getElementById('day1Char2');
+            const scene = document.querySelector('#day1Screen .character-scene');
+            
+            switch(action) {
+                case 'pick':
+                    showSceneBubble(scene, '🌹', char1.style.left);
+                    setTimeout(() => showSceneBubble(scene, '🌺', char2.style.left), 500);
+                    break;
+                case 'walk':
+                    char1.classList.add('walking');
+                    char2.classList.add('walking');
+                    char1.style.left = '40%';
+                    char2.style.left = '52%';
+                    setTimeout(() => {
+                        char1.classList.remove('walking');
+                        char2.classList.remove('walking');
+                    }, 2000);
+                    break;
+                case 'gift':
+                    char1.classList.add('walking');
+                    char1.style.left = '48%';
+                    setTimeout(() => {
+                        char1.classList.remove('walking');
+                        showSceneBubble(scene, '💐', '50%');
+                    }, 1000);
+                    break;
+            }
+        }
+        
+        // Day 2 Actions
+        function day2Action(action) {
+            const char1 = document.getElementById('day2Char1');
+            const char2 = document.getElementById('day2Char2');
+            const scene = document.querySelector('#day2Screen .character-scene');
+            
+            switch(action) {
+                case 'propose':
+                    char1.classList.add('walking');
+                    char1.style.left = '43%';
+                    setTimeout(() => {
+                        char1.classList.remove('walking');
+                        showSceneBubble(scene, '💍', '45%');
+                        setTimeout(() => showSceneBubble(scene, '❤️', '55%'), 800);
+                    }, 1000);
+                    break;
+                case 'dance':
+                    let count = 0;
+                    const interval = setInterval(() => {
+                        if (count % 2 === 0) {
+                            char1.style.left = '28%';
+                            char2.style.left = '62%';
+                        } else {
+                            char1.style.left = '32%';
+                            char2.style.left = '58%';
+                        }
+                        count++;
+                        if (count >= 6) {
+                            clearInterval(interval);
+                            char1.style.left = '30%';
+                            char2.style.left = '60%';
+                        }
+                    }, 400);
+                    break;
+                case 'celebrate':
+                    const emojis = ['🎉', '✨', '💫'];
+                    emojis.forEach((emoji, i) => {
+                        setTimeout(() => showSceneBubble(scene, emoji, (35 + i * 15) + '%'), i * 300);
+                    });
+                    break;
+            }
+        }
+        
+        // Day 4 Actions
+        function day4Action(action) {
+            const char1 = document.getElementById('day4Char1');
+            const char2 = document.getElementById('day4Char2');
+            const scene = document.querySelector('#day4Screen .character-scene');
+            
+            switch(action) {
+                case 'stargaze':
+                    showSceneBubble(scene, '⭐', char1.style.left);
+                    setTimeout(() => showSceneBubble(scene, '✨', char2.style.left), 400);
+                    break;
+                case 'closer':
+                    char1.classList.add('walking');
+                    char2.classList.add('walking');
+                    char1.style.left = '40%';
+                    char2.style.left = '52%';
+                    setTimeout(() => {
+                        char1.classList.remove('walking');
+                        char2.classList.remove('walking');
+                    }, 1500);
+                    break;
+                case 'kiss':
+                    char1.classList.add('walking');
+                    char2.classList.add('walking');
+                    char1.style.left = '44%';
+                    char2.style.left = '48%';
+                    setTimeout(() => {
+                        char1.classList.remove('walking');
+                        char2.classList.remove('walking');
+                        showSceneBubble(scene, '💋', '46%', '40px');
+                    }, 1200);
+                    break;
+            }
+        }
+        
+        // Day 5 Actions
+        function day5Action(action) {
+            const char1 = document.getElementById('day5Char1');
+            const char2 = document.getElementById('day5Char2');
+            const scene = document.querySelector('#day5Screen .character-scene');
+            
+            switch(action) {
+                case 'cook':
+                    char1.classList.add('jumping');
+                    setTimeout(() => {
+                        char1.classList.remove('jumping');
+                        char2.classList.add('jumping');
+                    }, 300);
+                    setTimeout(() => char2.classList.remove('jumping'), 600);
+                    showSceneBubble(scene, '👨‍🍳', '45%');
+                    break;
+                case 'taste':
+                    showSceneBubble(scene, '😋', char2.style.left);
+                    setTimeout(() => showSceneBubble(scene, '😍', char1.style.left), 600);
+                    break;
+                case 'share':
+                    char1.classList.add('walking');
+                    char1.style.left = '43%';
+                    setTimeout(() => {
+                        char1.classList.remove('walking');
+                        showSceneBubble(scene, '🍫', '50%');
+                    }, 1000);
+                    break;
+            }
+        }
+        
+        // Day 6 Actions
+        function day6Action(action) {
+            const char1 = document.getElementById('day6Char1');
+            const char2 = document.getElementById('day6Char2');
+            const scene = document.querySelector('#day6Screen .character-scene');
+            
+            switch(action) {
+                case 'hold':
+                    char1.classList.add('walking');
+                    char2.classList.add('walking');
+                    char1.style.left = '42%';
+                    char2.style.left = '48%';
+                    setTimeout(() => {
+                        char1.classList.remove('walking');
+                        char2.classList.remove('walking');
+                        showSceneBubble(scene, '🤝', '45%');
+                    }, 1200);
+                    break;
+                case 'closer':
+                    char1.style.left = '40%';
+                    char2.style.left = '50%';
+                    showSceneBubble(scene, '💑', '45%');
+                    break;
+                case 'promise':
+                    showSceneBubble(scene, '💍', '45%', '50px');
+                    setTimeout(() => {
+                        showSceneBubble(scene, '✨', '40%');
+                        showSceneBubble(scene, '✨', '50%');
+                    }, 600);
+                    break;
+            }
+        }
+        
+        // Generic scene bubble function
+        function showSceneBubble(sceneElement, emoji, leftPosition, fontSize = '30px') {
+            const bubble = document.createElement('div');
+            bubble.className = 'action-bubble';
+            bubble.textContent = emoji;
+            bubble.style.left = leftPosition;
+            bubble.style.bottom = '150px';
+            bubble.style.fontSize = fontSize;
+            sceneElement.appendChild(bubble);
+            
+            setTimeout(() => {
+                bubble.remove();
+            }, 2000);
+        }
+        
+        function acceptQuest() {
+            addToInventory('📜');
+            showScreen('daySelection');
+        }
+        
+        function startDay(dayNum) {
+            // Allow day 1 always, check if others are unlocked
+            if (dayNum > 1) {
+                const dayCard = document.getElementById('day' + dayNum);
+                if (dayCard && dayCard.classList.contains('locked')) {
+                    alert('Complete the previous day first! 🔒');
+                    return;
+                }
+            }
+            gameState.currentDay = dayNum;
+            showScreen('day' + dayNum + 'Screen');
+        }
+        
+        function completeDay(dayNum) {
+            if (!gameState.completedDays.includes(dayNum)) {
+                gameState.completedDays.push(dayNum);
+            }
+            
+            // Add special items to inventory
+            const dayItems = {
+                1: '🌹',
+                2: '💍',
+                3: '☕',
+                4: '⭐',
+                5: '🍫',
+                6: '📜',
+                7: '💝'
+            };
+            
+            if (dayItems[dayNum]) {
+                addToInventory(dayItems[dayNum]);
+            }
+            
+            // Mark day as completed
+            const dayCard = document.getElementById('day' + dayNum);
+            if (dayCard) {
+                dayCard.classList.add('completed');
+            }
+            
+            // Unlock next day
+            if (dayNum < 7) {
+                const nextDayCard = document.getElementById('day' + (dayNum + 1));
+                if (nextDayCard) {
+                    nextDayCard.classList.remove('locked');
+                }
+            }
+            
+            // Update progress
+            updateProgress();
+            
+            // Return to day selection
+            showScreen('daySelection');
+        }
+        
+        function updateProgress() {
+            const progress = (gameState.completedDays.length / 7) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('progressText').textContent = 
+                gameState.completedDays.length + '/7 Days';
+        }
+        
+        // Day 1: Bouquet builder
+        function addFlower(flower) {
+            gameState.bouquet.push(flower);
+            const bouquetDiv = document.getElementById('bouquet');
+            bouquetDiv.innerHTML = gameState.bouquet.join(' ');
+        }
+        
+        function clearBouquet() {
+            gameState.bouquet = [];
+            document.getElementById('bouquet').innerHTML = 
+                '<span style="font-size: 12px; color: #888;">Your bouquet will appear here...</span>';
+        }
+        
+        // Day 2: Style selection
+        function selectStyle(style) {
+            const responses = {
+                cozy: "Perfect! We'll take our time and savor every moment together. 🏡✨",
+                adventurous: "Amazing! Get ready for exciting surprises and fun challenges! 🗺️⚔️",
+                romantic: "Beautiful choice! Our journey will be filled with heartfelt moments. 💕🌹"
+            };
+            
+            document.getElementById('styleResponse').textContent = responses[style];
+            document.getElementById('styleResponse').style.display = 'block';
+            document.getElementById('day2Continue').style.display = 'block';
+        }
+        
+        // Day 3: Potion selection
+        function choosePotion(type) {
+            const responses = {
+                healing: "🍫 Sweet choice! *Hands you a warm mug of hot chocolate* Here's to cozy moments together!",
+                fire: "🔥 Spicy! *Serves a cinnamon latte* You like a little kick in your drinks AND in life!"
+            };
+            
+            const responseDiv = document.getElementById('potionResponse');
+            responseDiv.textContent = responses[type];
+            responseDiv.style.display = 'block';
+            document.getElementById('day3Continue').style.display = 'block';
+        }
+        
+        // Day 4: Memory selection
+        function selectMemory(choice) {
+            document.getElementById('memoryResponse').style.display = 'block';
+            document.getElementById('day4Continue').style.display = 'block';
+        }
+        
+        // Day 5: Chocolate crafting
+        function addIngredient(ingredient) {
+            const ingredientNames = {
+                dark: 'Dark Chocolate 🟫',
+                milk: 'Milk Chocolate 🤎',
+                nuts: 'Crunchy Nuts 🥜',
+                caramel: 'Sweet Caramel 🍮'
+            };
+            
+            if (!gameState.chocolateIngredients.includes(ingredient)) {
+                gameState.chocolateIngredients.push(ingredient);
+                const recipeList = gameState.chocolateIngredients
+                    .map(ing => ingredientNames[ing])
+                    .join(' + ');
+                document.getElementById('recipeList').innerHTML = recipeList;
+            }
+        }
+        
+        // Day 6: Promise selection
+        function makePromise(choice) {
+            document.getElementById('promiseResponse').style.display = 'block';
+            document.getElementById('day6Continue').style.display = 'block';
+        }
+        
+        // Restart adventure
+        function restartAdventure() {
+            if (confirm('Start the adventure again? (Your memories will remain in your heart 💕)')) {
+                const savedName = gameState.playerName;
+                
+                gameState = {
+                    currentDay: 0,
+                    completedDays: [],
+                    inventory: [],
+                    bouquet: [],
+                    chocolateIngredients: [],
+                    musicPlaying: false,
+                    playerName: savedName
+                };
+                
+                updateInventory();
+                updateProgress();
+                
+                // Reset all day cards
+                for (let i = 1; i <= 7; i++) {
+                    const card = document.getElementById('day' + i);
+                    if (card) {
+                        card.classList.remove('completed');
+                        if (i > 1) {
+                            card.classList.add('locked');
+                        }
+                    }
+                }
+                
+                // Clear name input
+                document.getElementById('playerName').value = '';
+                
+                showScreen('startScreen');
+            }
+        }
+        
+        // Load uploaded MP3 for day 7
+        window.addEventListener('load', function() {
+            const finalMusic = document.getElementById('finalDayMusic');
+            finalMusic.src = '/mnt/user-data/uploads/Chaar_Kadam_Pk_128_Kbps.mp3';
+        });
+    </script>
+</body>
+</html>
